@@ -3,15 +3,238 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Athenee-Royal-Ath-Student-Card-Login</title>
-  <meta name="description" content="Athenee Royal Ath Student Card Login Portal">
-  <meta name="keywords" content="Athenee Royal Ath, Student Card, Login, Signup">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>Student Login</title>
   <style>
-    /* Your previous CSS goes here */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top left, #6366f1 0%, #0f172a 60%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .landing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .landing h1 {
+      font-size: 6rem; /* 5x bigger */
+      font-weight: 900;
+    }
+    .landing button {
+      background: #22d3ee;
+      color: #0f172a;
+      font-weight: bold;
+      border: none;
+      padding: 30px 50px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 2rem; /* Bigger */
+      margin: 10px;
+      width: auto;
+    }
+    .wrap {
+      background: #1e293b;
+      border-radius: 24px;
+      padding: 40px;
+      width: 600px;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+    }
+    .field { display: grid; gap: 10px; margin-bottom: 20px; text-align: left; }
+    label { font-size: 1.5rem; color: #94a3b8; }
+    input[type="text"], input[type="file"] {
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      font-size: 1.5rem;
+    }
+    button.submit {
+      background: #6366f1;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 2rem;
+      width: 100%;
+    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <!-- Your previous landing page, forms, and JavaScript goes here -->
+  <!-- Landing Page -->
+  <div id="landing" class="landing">
+    <h1>Welcome to Student Login!</h1>
+    <div>
+      <button id="toLogin">Login</button>
+      <button id="toSignup">Sign Up</button>
+    </div>
+  </div>
+
+  <!-- Forms Container -->
+  <div class="wrap hidden" id="formWrap">
+    <!-- Signup Form -->
+    <form id="signupForm" class="hidden">
+      <h2 style="font-size:3rem">Sign Up</h2>
+      <div class="field">
+        <label for="sFirst">Name</label>
+        <input id="sFirst" type="text" required />
+      </div>
+      <div class="field">
+        <label for="sLast">Surname</label>
+        <input id="sLast" type="text" required />
+      </div>
+      <div class="field">
+        <label for="sClass">Class</label>
+        <input id="sClass" type="text" required />
+      </div>
+      <div class="field">
+        <label for="sImage">Upload Barcode Image</label>
+        <input id="sImage" type="file" accept="image/*" required />
+      </div>
+      <button type="submit" class="submit">Sign Up</button>
+    </form>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="hidden">
+      <h2 style="font-size:3rem">Login</h2>
+      <div class="field">
+        <label for="lFirst">Name</label>
+        <input id="lFirst" type="text" required />
+      </div>
+      <div class="field">
+        <label for="lLast">Surname</label>
+        <input id="lLast" type="text" required />
+      </div>
+      <div class="field">
+        <label for="lClass">Class</label>
+        <input id="lClass" type="text" required />
+      </div>
+      <button type="submit" class="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    const landing = document.getElementById('landing');
+    const formWrap = document.getElementById('formWrap');
+    const signupForm = document.getElementById('signupForm');
+    const loginForm = document.getElementById('loginForm');
+
+    // Show forms from landing page
+    document.getElementById('toSignup').onclick = () => {
+      landing.classList.add('hidden');
+      formWrap.classList.remove('hidden');
+      signupForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    };
+    document.getElementById('toLogin').onclick = () => {
+      landing.classList.add('hidden');
+      formWrap.classList.remove('hidden');
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+    };
+
+    // Handle Signup
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const first = document.getElementById('sFirst').value.trim();
+      const last = document.getElementById('sLast').value.trim();
+      const cls = document.getElementById('sClass').value.trim();
+      const file = document.getElementById('sImage').files[0];
+
+      if (!file) return alert('Please upload your barcode image.');
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const user = { first, last, cls, img: reader.result };
+        localStorage.setItem('demo-user', JSON.stringify(user));
+        alert('Signup successful! You can now login.');
+        signupForm.reset();
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Handle Login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const first = document.getElementById('lFirst').value.trim();
+      const last = document.getElementById('lLast').value.trim();
+      const cls = document.getElementById('lClass').value.trim();
+      const user = JSON.parse(localStorage.getItem('demo-user'));
+
+      if (!user) return alert('No account found. Please sign up first.');
+
+      if (user.first === first && user.last === last && user.cls === cls) {
+        const win = window.open('', '_blank');
+        win.document.write(`
+          <html><head><title>Profile</title>
+          <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700&display=swap" rel="stylesheet">
+          <style>
+            body {
+              margin: 0;
+              font-family: 'Rubik', sans-serif;
+              background: radial-gradient(circle at top left, #6366f1 0%, #0f172a 60%);
+              color: #fff;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              text-align: center;
+            }
+            .card {
+              border-radius: 32px;
+              overflow: hidden;
+              box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+              background: rgba(255,255,255,0.08);
+              padding: 30px;
+            }
+            img {
+              max-width: 1000px; /* 4x bigger */
+              border-radius: 20px;
+              display: block;
+              margin: 0 auto;
+            }
+            .row {
+              display: flex;
+              justify-content: center;
+              gap: 40px;
+              margin-top: 30px;
+            }
+            p {
+              font-size: 10rem; /* 5x bigger */
+              font-weight: 700;
+              margin: 0;
+            }
+            .class {
+              margin-top: 30px;
+            }
+          </style>
+          </head><body>
+            <div class="card">
+              <img src="${user.img}" alt="Barcode" />
+            </div>
+            <div class="row">
+              <p>${user.first}</p>
+              <p>${user.last}</p>
+            </div>
+            <p class="class">${user.cls}</p>
+          </body></html>
+        `);
+      } else {
+        alert('Login failed. Please check your details.');
+      }
+    });
+  </script>
 </body>
 </html>
